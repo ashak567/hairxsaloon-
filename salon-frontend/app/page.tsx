@@ -191,21 +191,54 @@ export default function HomePage() {
             <h2 className="text-5xl md:text-6xl font-serif font-light">The <span className="italic text-[#B76E79]">Gallery</span></h2>
           </div>
           <div className="grid grid-cols-3 gap-4 auto-rows-[250px]">
-            {/* Using colored placeholders representing luxury imagery, since we don't have real images yet */}
-            <div className="col-span-2 row-span-2 rounded-2xl bg-gradient-to-br from-[rgba(183,110,121,0.2)] to-[#0d0d0d] border border-[rgba(183,110,121,0.1)] flex items-end p-6 hover:border-[rgba(183,110,121,0.4)] transition-all">
-              <p className="font-serif text-xl">Bridal Makeover</p>
+            {/* 5th Image: Bridal Makeover */}
+            <div className="col-span-2 row-span-2 rounded-2xl relative overflow-hidden group border border-[rgba(183,110,121,0.1)] hover:border-[rgba(183,110,121,0.4)] transition-all">
+              <img src="/images/gallery/bridal_makeup.png" alt="Bridal Makeover" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+              <div className="absolute bottom-0 left-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="font-serif text-3xl text-[#F5EFE7]">Bridal Makeover</p>
+                <p className="text-[#B76E79] text-xs uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">Luxury Bridal Packages</p>
+              </div>
             </div>
-            <div className="rounded-2xl bg-gradient-to-bl from-[rgba(183,110,121,0.1)] to-[#0d0d0d] border border-[rgba(183,110,121,0.1)] flex items-end p-6 hover:border-[rgba(183,110,121,0.4)] transition-all">
-              <p className="font-serif">Balayage Color</p>
+            
+            {/* 3rd Image: Balayage Color */}
+            <div className="rounded-2xl relative overflow-hidden group border border-[rgba(183,110,121,0.1)] hover:border-[rgba(183,110,121,0.4)] transition-all">
+              <img src="/images/gallery/balayage_color.png" alt="Balayage Color" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent opacity-90" />
+              <div className="absolute bottom-0 left-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="font-serif text-xl text-[#F5EFE7]">Balayage Color</p>
+                <p className="text-[#B76E79] text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">Premium Highlights</p>
+              </div>
             </div>
-            <div className="rounded-2xl bg-gradient-to-tr from-[rgba(183,110,121,0.15)] to-[#0d0d0d] border border-[rgba(183,110,121,0.1)] flex items-end p-6 hover:border-[rgba(183,110,121,0.4)] transition-all">
-              <p className="font-serif">Precision Cut</p>
+            
+            {/* 1st Image: Precision Cut */}
+            <div className="rounded-2xl relative overflow-hidden group border border-[rgba(183,110,121,0.1)] hover:border-[rgba(183,110,121,0.4)] transition-all">
+              <img src="/images/gallery/precision_cut.png" alt="Precision Cut" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent opacity-90" />
+              <div className="absolute bottom-0 left-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="font-serif text-xl text-[#F5EFE7]">Precision Cut</p>
+                <p className="text-[#B76E79] text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">Expert Styling</p>
+              </div>
             </div>
-            <div className="rounded-2xl bg-gradient-to-tl from-[rgba(183,110,121,0.1)] to-[#0d0d0d] border border-[rgba(183,110,121,0.1)] flex items-end p-6 hover:border-[rgba(183,110,121,0.4)] transition-all">
-              <p className="font-serif">Keratin Smooth</p>
+            
+            {/* 2nd Image: Keratin Smooth */}
+            <div className="rounded-2xl relative overflow-hidden group border border-[rgba(183,110,121,0.1)] hover:border-[rgba(183,110,121,0.4)] transition-all">
+              <img src="/images/gallery/keratin_treatment.png" alt="Keratin Smooth" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent opacity-90" />
+              <div className="absolute bottom-0 left-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="font-serif text-xl text-[#F5EFE7]">Keratin Smooth</p>
+                <p className="text-[#B76E79] text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">Silky Frizz-Free Finish</p>
+              </div>
             </div>
-            <div className="col-span-2 rounded-2xl bg-gradient-to-r from-[rgba(183,110,121,0.2)] to-[#0d0d0d] border border-[rgba(183,110,121,0.1)] flex items-end p-6 hover:border-[rgba(183,110,121,0.4)] transition-all">
-              <p className="font-serif text-xl">Luxury Hair Spa</p>
+            
+            {/* 4th Image: Luxury Hair Spa */}
+            <div className="col-span-2 rounded-2xl relative overflow-hidden group border border-[rgba(183,110,121,0.1)] hover:border-[rgba(183,110,121,0.4)] transition-all">
+              <img src="/images/gallery/hair_spa.png" alt="Luxury Hair Spa" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-[#0d0d0d]/40 to-transparent opacity-90" />
+              <div className="absolute bottom-0 left-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="font-serif text-3xl text-[#F5EFE7]">Luxury Hair Spa</p>
+                <p className="text-[#B76E79] text-xs uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">Deep Nourishing Rituals</p>
+              </div>
             </div>
           </div>
         </div>
