@@ -26,43 +26,7 @@ const STYLISTS = [
 ];
 
 export default function HomePage() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
-
-  // GSAP SCROLL SCRUB VIDEO
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Wait for video metadata to load so we know the exact duration
-    video.addEventListener('loadedmetadata', () => {
-      // Create a GSAP timeline linked to the scroll of the entire page
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: document.body,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1.5, // 1.5 second smoothing so it feels liquid
-        }
-      });
-
-      // Animate the video currentTime property from 0 to video.duration
-      tl.to(video, {
-        currentTime: video.duration || 10, // Fallback to 10s if duration fails
-        ease: 'none'
-      });
-      
-      // Force render the first frame immediately for chromium browsers
-      video.currentTime = 0.1;
-    }, { once: true });
-    
-    // Force load to get metadata
-    video.load();
-
-    return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
 
   // SECTION SCROLL REVEAL
   useEffect(() => {
@@ -94,15 +58,15 @@ export default function HomePage() {
   return (
     <main className="bg-[#0d0d0d] text-[#F5EFE7]">
 
-      {/* FIXED VIDEO BACKGROUND DRIVEN BY SCROLL */}
+      {/* FIXED AUTO-PLAYING VIDEO BACKGROUND */}
       <div className="fixed inset-0 w-full h-full -z-10 bg-[#0d0d0d] overflow-hidden">
         <video
-          ref={videoRef}
           src={VIDEO_URL}
           className="absolute inset-0 w-full h-full object-cover"
           muted
           playsInline
           autoPlay
+          loop
           preload="auto"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0d] to-[#0d0d0d] opacity-80" />
