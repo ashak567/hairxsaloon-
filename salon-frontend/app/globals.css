@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #0d0d0d;
+    --color-secondary: #F5EFE7;
+    --color-accent: #B76E79;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0d0d0d;
+    color: #F5EFE7;
+    font-family: var(--font-inter, 'Inter', Arial, sans-serif);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(183, 110, 121, 0.3);
+    color: #F5EFE7;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0d0d0d; }
+  ::-webkit-scrollbar-thumb { background: #B76E79; border-radius: 10px; }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    transition: all 0.4s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(183, 110, 121, 0.25);
+  }
+
+  .glass-nav {
+    background: rgba(13, 13, 13, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(183, 110, 121, 0.1);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #F5EFE7 0%, #B76E79 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Input styling */
+  .input-elegant {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #F5EFE7;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .input-elegant:focus {
+    border-color: #B76E79;
+  }
+
+  .input-elegant::placeholder {
+    color: rgba(245, 239, 231, 0.3);
+  }
+}
