@@ -7,7 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 
-const VIDEO_URL = '/videos/hero-ribbon.mp4';
+const VIDEO_URL = 'https://pub-5d2bae0ce45142838ad6241bc5e9a2dc.r2.dev/Hair_ribbon_composition_rose_gold_delpmaspu_%20(1).mp4';
 
 const SIGNATURE_SERVICES = [
   { name: 'Keratin Treatment', icon: '✦', desc: 'Salon-grade smoothening for silky frizz-free hair that lasts months.', price: 'From ₹4,000' },
