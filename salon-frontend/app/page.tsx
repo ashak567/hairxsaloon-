@@ -69,13 +69,14 @@ export default function HomePage() {
           loop
           preload="auto"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d0d0d] to-[#0d0d0d] opacity-80" />
+        {/* Strong dark overlay to guarantee text readability against bright video parts */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0d0d0d]/80 via-[#0d0d0d]/70 to-[#0d0d0d]" />
       </div>
 
-      {/* HERO SECTION — Floating over 3D background */}
+      {/* HERO SECTION — Floating over background */}
       <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6">
-        {/* Subtle gradient overlay to ensure text is readable but 3D shows through */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[rgba(10,5,8,0.2)] to-[rgba(10,5,8,0.8)] pointer-events-none" />
+        {/* Subtle gradient to transition smoothly into the solid sections below */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0d0d0d] pointer-events-none" />
         
         <div className="relative z-10 flex flex-col items-center">
           <p className="text-[#B76E79] uppercase tracking-[0.5em] text-xs mb-8 font-light drop-shadow-lg">Hair X Studio · Ballari</p>
