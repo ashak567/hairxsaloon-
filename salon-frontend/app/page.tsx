@@ -56,7 +56,7 @@ export default function HomePage() {
   const setRef = (i: number) => (el: HTMLElement | null) => { sectionsRef.current[i] = el; };
 
   return (
-    <main className="bg-[#0d0d0d] text-[#F5EFE7]">
+    <main className="text-[#F5EFE7]">
 
       {/* FIXED AUTO-PLAYING VIDEO BACKGROUND */}
       <div className="fixed inset-0 w-full h-full -z-10 bg-[#0d0d0d] overflow-hidden">
