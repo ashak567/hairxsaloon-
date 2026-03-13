@@ -9,6 +9,7 @@ import GenderSelection from '@/components/booking/GenderSelection';
 import ServiceSelection from '@/components/booking/ServiceSelection';
 import StylistSelection from '@/components/booking/StylistSelection';
 import DateTimeSelection from '@/components/booking/DateTimeSelection';
+import ContactInfoSelection from '@/components/booking/ContactInfoSelection';
 import BookingConfirmation from '@/components/booking/BookingConfirmation';
 
 const steps = [
@@ -17,6 +18,7 @@ const steps = [
   'Services',
   'Stylist',
   'Date & Time',
+  'Contact',
   'Confirm'
 ];
 
@@ -54,6 +56,8 @@ export default function BookingPage() {
       case 4:
         return <DateTimeSelection data={bookingData} updateData={updateBookingData} onNext={nextStep} onPrev={prevStep} />;
       case 5:
+        return <ContactInfoSelection data={bookingData} updateData={updateBookingData} onNext={nextStep} onPrev={prevStep} />;
+      case 6:
         return <BookingConfirmation data={bookingData} onPrev={prevStep} />;
       default:
         return null;

@@ -30,7 +30,7 @@ export async function GET(_req: NextRequest) {
     const allAppts = await Appointment.find({ status: { $ne: 'Cancelled' } });
     const serviceCount: Record<string, { count: number; revenue: number }> = {};
     allAppts.forEach((appt) => {
-      appt.services.forEach((svc) => {
+      appt.services.forEach((svc: string) => {
         if (!serviceCount[svc]) serviceCount[svc] = { count: 0, revenue: 0 };
         serviceCount[svc].count++;
       });
@@ -39,7 +39,7 @@ export async function GET(_req: NextRequest) {
     // Match revenue from invoices
     const allPaidInvoices = await Invoice.find({ status: 'Paid' });
     allPaidInvoices.forEach((inv) => {
-      inv.items.forEach((item) => {
+      inv.items.forEach((item: { service: string; amount: number }) => {
         if (serviceCount[item.service]) {
           serviceCount[item.service].revenue += item.amount;
         }

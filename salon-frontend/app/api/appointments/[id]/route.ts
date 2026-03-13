@@ -15,14 +15,15 @@ function getUserId(req: NextRequest): string | null {
 }
 
 // PATCH /api/appointments/[id] — update status (admin) or reschedule/cancel (user)
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
     const userId = getUserId(req);
     const body = await req.json();
     const { status, date, time } = body;
 
-    const appointment = await Appointment.findById(params.id);
+    const { id } = await params;
+    const appointment = await Appointment.findById(id);
     if (!appointment) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     // Allow update if admin (no userId check) or owner
@@ -42,10 +43,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 // GET /api/appointments/[id]
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
-    const appointment = await Appointment.findById(params.id);
+    const { id } = await params;
+    const appointment = await Appointment.findById(id);
     if (!appointment) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json({ appointment });
   } catch (err: any) {

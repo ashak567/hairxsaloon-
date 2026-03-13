@@ -143,6 +143,15 @@ export default function BookingConfirmation({ data, onPrev }: any) {
               <span className="text-sm font-medium text-[#F5EFE7]">{data.gender}</span>
             </div>
 
+            {/* Contact */}
+            <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.05)] pb-4">
+              <span className="text-xs uppercase tracking-widest opacity-50">Contact</span>
+              <div className="text-right">
+                <p className="text-sm font-medium text-[#F5EFE7]">{data.customerName}</p>
+                <p className="text-xs opacity-40">{data.phone}</p>
+              </div>
+            </div>
+
             {/* Services */}
             <div className="border-b border-[rgba(255,255,255,0.05)] pb-4">
               <div className="flex justify-between items-start">

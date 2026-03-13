@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminLogin from '@/components/admin/AdminLogin';
 
@@ -38,6 +38,43 @@ export default function AdminDashboard() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [reports, setReports] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState('All Branches');
+  
+  // Audio notification tracking
+  const prevAppts = useRef<Appointment[]>([]);
+  const isFirstLoad = useRef(true);
+
+  // Play a pleasant double-chime for new bookings
+  const playNewBookingChime = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+      osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15); // E5
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 1);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 1);
+    } catch (e) { console.warn("AudioContext requires user interaction first", e); }
+  }, []);
+
+  // Play a low downward sweep for cancellations
+  const playCancelChime = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(300, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.5);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+    } catch (e) { console.warn("AudioContext requires user interaction first", e); }
+  }, []);
 
   // Manage modal state
   const [manageAppt, setManageAppt] = useState<Appointment | null>(null);
@@ -52,20 +89,50 @@ export default function AdminDashboard() {
   const [showWalkinModal, setShowWalkinModal] = useState(false);
   const [walkinData, setWalkinData] = useState({ name: '', phone: '', email: '', gender: 'Male', service: '', stylist: STYLISTS[0] });
 
-  const fetchAll = useCallback(async () => {
-    setLoading(true);
+  const fetchAll = useCallback(async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     const [apptRes, invRes, repRes] = await Promise.all([
       fetch('/api/appointments?all=1'),
       fetch('/api/invoices'),
       fetch('/api/reports'),
     ]);
-    if (apptRes.ok) setAppointments((await apptRes.json()).appointments);
+    
+    if (apptRes.ok) {
+      const data = await apptRes.json();
+      const newAppts: Appointment[] = data.appointments;
+      
+      // Detect changes for audio notifications
+      if (!isFirstLoad.current) {
+        const oldIds = prevAppts.current.map(a => a._id);
+        const hasNewBooking = newAppts.some(a => !oldIds.includes(a._id));
+        
+        const hasCancellation = newAppts.some(newA => {
+          const oldA = prevAppts.current.find(a => a._id === newA._id);
+          return oldA && oldA.status !== 'Cancelled' && newA.status === 'Cancelled';
+        });
+
+        if (hasNewBooking) playNewBookingChime();
+        else if (hasCancellation) playCancelChime();
+      }
+      
+      prevAppts.current = newAppts;
+      isFirstLoad.current = false;
+      setAppointments(newAppts);
+    }
+    
     if (invRes.ok) setInvoices((await invRes.json()).invoices);
     if (repRes.ok) setReports(await repRes.json());
-    setLoading(false);
-  }, []);
+    if (!isSilent) setLoading(false);
+  }, [playNewBookingChime, playCancelChime]);
 
-  useEffect(() => { if (isAuthenticated) fetchAll(); }, [isAuthenticated, fetchAll]);
+  // Polling loop for real-time updates
+  useEffect(() => { 
+    if (isAuthenticated) {
+      fetchAll(); 
+      const interval = setInterval(() => fetchAll(true), 15000); // 15s poll
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, fetchAll]);
 
   const updateApptStatus = async (id: string, status: string) => {
     await fetch(`/api/appointments/${id}`, {
@@ -105,7 +172,8 @@ export default function AdminDashboard() {
         customerName: walkinData.name,
         customerEmail: walkinData.email || `walkin-${Date.now()}@hairxstudio.com`,
         customerPhone: walkinData.phone,
-        branch: 'Parvatinagar Branch', branchId: 'parvatinagar',
+        branch: selectedBranch === 'All Branches' ? 'Parvatinagar Branch' : selectedBranch, 
+        branchId: selectedBranch === 'All Branches' ? '1' : (selectedBranch.includes('Ashok') ? '2' : '1'),
         gender: walkinData.gender,
         services: [walkinData.service],
         stylistId: walkinData.stylist.toLowerCase().replace(' ', '-'),
@@ -121,10 +189,17 @@ export default function AdminDashboard() {
   const tabs = ['Appointments', 'Queue', 'Availability', 'Invoices', 'Reports'];
   const inputCls = 'w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-2 text-[#F5EFE7] text-sm focus:outline-none focus:border-[#B76E79] transition-colors';
 
-  // Split appointments into today's and other
+  const filteredAppointments = selectedBranch === 'All Branches' 
+    ? appointments 
+    : appointments.filter(a => a.branch === selectedBranch);
+
+  const filteredInvoices = selectedBranch === 'All Branches'
+    ? invoices
+    : invoices.filter(i => i.branch === selectedBranch);
+
   const todayStr = new Date().toISOString().split('T')[0];
-  const todayAppts = appointments.filter(a => a.date === todayStr && a.status !== 'Cancelled');
-  const upcomingAppts = appointments.filter(a => a.date > todayStr && a.status !== 'Cancelled');
+  const todayAppts = filteredAppointments.filter(a => a.date === todayStr && a.status !== 'Cancelled');
+  const upcomingAppts = filteredAppointments.filter(a => a.date > todayStr && a.status !== 'Cancelled');
 
   if (!isAuthenticated) return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
 
@@ -136,7 +211,16 @@ export default function AdminDashboard() {
             <p className="text-[#B76E79] uppercase tracking-widest text-xs mb-1">Hair X Studio</p>
             <h1 className="text-3xl font-serif">Staff Portal</h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            <select 
+              value={selectedBranch}
+              onChange={(e) => setSelectedBranch(e.target.value)}
+              className="bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.15)] px-4 py-2 rounded-full text-xs uppercase tracking-widest text-[#F5EFE7] focus:outline-none focus:border-[#B76E79]"
+            >
+              <option value="All Branches">All Branches</option>
+              <option value="Parvatinagar Branch">Parvatinagar Branch</option>
+              <option value="Ashok Nagar Branch">Ashok Nagar Branch</option>
+            </select>
             <button onClick={() => setShowWalkinModal(true)}
               className="bg-[#B76E79] text-[#0d0d0d] px-6 py-2 rounded-full font-medium tracking-wider hover:bg-[#F5EFE7] transition-colors text-sm">
               + Walk-In
@@ -240,7 +324,7 @@ export default function AdminDashboard() {
                 </>
               )}
 
-              {appointments.length === 0 && !loading && (
+              {filteredAppointments.length === 0 && !loading && (
                 <div className="text-center py-16 opacity-40">
                   <p className="text-lg">No appointments yet.</p>
                   <p className="text-sm mt-2">Bookings made through the website will appear here.</p>
@@ -350,7 +434,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {invoices.map(inv => (
+                      {filteredInvoices.map(inv => (
                         <tr key={inv._id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.02)]">
                           <td className="py-4 font-mono text-xs text-[#B76E79]">{inv.invoiceNumber}</td>
                           <td className="py-4">{inv.customerName}<br /><span className="text-xs opacity-40">{inv.customerEmail}</span></td>
