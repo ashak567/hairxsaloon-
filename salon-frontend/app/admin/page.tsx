@@ -40,6 +40,12 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState('All Branches');
   
+  // Check for existing session token
+  useEffect(() => {
+    const token = localStorage.getItem('hx_admin_token');
+    if (token) setIsAuthenticated(true);
+  }, []);
+
   // Audio notification tracking
   const prevAppts = useRef<Appointment[]>([]);
   const isFirstLoad = useRef(true);
