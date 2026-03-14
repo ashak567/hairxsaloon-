@@ -154,6 +154,23 @@ export default function AdminDashboard() {
     fetchAll();
   };
 
+  const deleteAppt = async (id: string) => {
+    if (!window.confirm("Are you sure you want to completely delete this appointment?")) return;
+    try {
+      const token = localStorage.getItem('hx_admin_token');
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setManageAppt(null);
+        fetchAll(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 
 
   const assignStylistToAppt = async (id: string, stylistName: string) => {
@@ -627,6 +644,10 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
+                  <button onClick={() => deleteAppt(manageAppt._id)}
+                    className="flex-1 py-3 bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl text-sm font-medium hover:bg-red-500 hover:text-white transition-colors">
+                    Delete
+                  </button>
                   <button onClick={() => setManageAppt(null)}
                     className="flex-1 py-3 border border-[rgba(255,255,255,0.15)] rounded-xl text-sm hover:border-[#B76E79] transition-colors">
                     Cancel

@@ -54,3 +54,27 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+// DELETE /api/appointments/[id] — delete an appointment (admin)
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const auth = req.headers.get('authorization');
+    if (!auth?.startsWith('Bearer ')) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    jwt.verify(auth.slice(7), JWT_SECRET); // Will throw if invalid admin token
+
+    await connectToDatabase();
+    const { id } = await params;
+    
+    // Ensure the ID is valid
+    if (!id || id.length < 24) {
+        return NextResponse.json({ error: 'Invalid appointment ID' }, { status: 400 });
+    }
+
+    const result = await Appointment.findByIdAndDelete(id);
+    if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    return NextResponse.json({ success: true, message: 'Appointment deleted successfully' });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
