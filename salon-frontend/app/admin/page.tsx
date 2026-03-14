@@ -226,6 +226,26 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleWipeData = async (type: 'appointments' | 'invoices') => {
+    if (!window.confirm(`Are you absolutely sure you want to delete all ${type}? This action cannot be undone.`)) return;
+    
+    setSettingsStatus({ loading: true, error: '', success: '' });
+    try {
+      const token = localStorage.getItem('hx_admin_token');
+      const res = await fetch(`/api/admin/reset?type=${type}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to wipe data');
+      
+      setSettingsStatus({ loading: false, error: '', success: data.message });
+      fetchAll(true); // refresh tables instantly
+    } catch (err: any) {
+      setSettingsStatus({ loading: false, error: err.message, success: '' });
+    }
+  };
+
   const tabs = ['Appointments', 'Queue', 'Availability', 'Invoices', 'Reports'];
   const inputCls = 'w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-2 text-[#F5EFE7] text-sm focus:outline-none focus:border-[#B76E79] transition-colors';
 
@@ -794,6 +814,26 @@ export default function AdminDashboard() {
                   {settingsStatus.loading ? 'Saving...' : 'Save Changes'}
                 </button>
               </form>
+
+              <div className="mt-8 pt-6 border-t border-red-500/20">
+                <h4 className="text-red-400 text-xs uppercase tracking-widest mb-4 opacity-80 font-medium">Danger Zone</h4>
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => handleWipeData('appointments')}
+                    disabled={settingsStatus.loading}
+                    className="w-full bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 rounded-lg text-xs uppercase tracking-widest transition-colors"
+                  >
+                    Clear Appointments History
+                  </button>
+                  <button 
+                    onClick={() => handleWipeData('invoices')}
+                    disabled={settingsStatus.loading}
+                    className="w-full bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white font-medium py-2 rounded-lg text-xs uppercase tracking-widest transition-colors"
+                  >
+                    Reset Revenue (Clear Invoices)
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}
