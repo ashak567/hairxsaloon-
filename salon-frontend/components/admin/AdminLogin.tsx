@@ -1,28 +1,37 @@
 'use client';
 import React, { useState } from 'react';
 
-// Default credentials — change via environment variable for production
-const ADMIN_USER = process.env.NEXT_PUBLIC_ADMIN_USER || 'admin';
-const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASS || 'admin123';
-
 export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      if (username === ADMIN_USER && password === ADMIN_PASS) {
-        onLogin();
-      } else {
-        setError('Invalid username or password.');
-        setLoading(false);
-      }
-    }, 600);
+    
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || 'Authentication failed');
+      
+      localStorage.setItem('hx_admin_token', data.token);
+      localStorage.setItem('hx_admin_user', data.username);
+      onLogin();
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,8 +52,8 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
                 required
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="input-elegant"
-                placeholder="admin"
+                className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-3 text-[#F5EFE7] focus:outline-none focus:border-[#B76E79] transition-colors"
+                placeholder="Manager"
                 autoComplete="username"
               />
             </div>
@@ -55,14 +64,14 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="input-elegant"
+                className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-3 text-[#F5EFE7] focus:outline-none focus:border-[#B76E79] transition-colors"
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
             </div>
 
             {error && (
-              <p className="text-red-400 text-xs text-center">{error}</p>
+              <p className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded text-center">{error}</p>
             )}
 
             <button
@@ -74,7 +83,9 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
             </button>
           </form>
 
-          <p className="text-center text-xs opacity-30 mt-6">Default: admin / admin123</p>
+          <p className="text-center text-xs opacity-40 mt-6 leading-relaxed">
+            First-time login? The credentials you enter here will automatically become the permanent master Admin account.
+          </p>
         </div>
       </div>
     </div>

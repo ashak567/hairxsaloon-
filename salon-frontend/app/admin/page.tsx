@@ -89,6 +89,11 @@ export default function AdminDashboard() {
   const [showWalkinModal, setShowWalkinModal] = useState(false);
   const [walkinData, setWalkinData] = useState({ name: '', phone: '', email: '', gender: 'Male', service: '', stylist: STYLISTS[0] });
 
+  // Settings modal
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [settingsData, setSettingsData] = useState({ username: '', password: '' });
+  const [settingsStatus, setSettingsStatus] = useState({ loading: false, error: '', success: '' });
+
   const fetchAll = useCallback(async (isSilent = false) => {
     if (!isSilent) setLoading(true);
     const [apptRes, invRes, repRes] = await Promise.all([
@@ -143,6 +148,8 @@ export default function AdminDashboard() {
     fetchAll();
   };
 
+
+
   const assignStylistToAppt = async (id: string, stylistName: string) => {
     await fetch(`/api/appointments/${id}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
@@ -159,7 +166,7 @@ export default function AdminDashboard() {
       body: JSON.stringify({ status: newStatus })
     });
     setPreviewInvoice(null);
-    fetchAll();
+    fetchAll(true);
   };
 
   const addWalkin = async (e: React.FormEvent) => {
@@ -183,7 +190,34 @@ export default function AdminDashboard() {
     });
     setShowWalkinModal(false);
     setWalkinData({ name: '', phone: '', email: '', gender: 'Male', service: '', stylist: STYLISTS[0] });
-    fetchAll();
+    fetchAll(true);
+  };
+
+  const handleUpdateSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSettingsStatus({ loading: true, error: '', success: '' });
+    try {
+      const token = localStorage.getItem('hx_admin_token');
+      const res = await fetch('/api/admin/settings', {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          newUsername: settingsData.username, 
+          newPassword: settingsData.password 
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update settings');
+      
+      localStorage.setItem('hx_admin_user', data.username);
+      setSettingsStatus({ loading: false, error: '', success: 'Settings updated successfully!' });
+      setTimeout(() => setShowSettingsModal(false), 2000);
+    } catch (err: any) {
+      setSettingsStatus({ loading: false, error: err.message, success: '' });
+    }
   };
 
   const tabs = ['Appointments', 'Queue', 'Availability', 'Invoices', 'Reports'];
@@ -229,7 +263,19 @@ export default function AdminDashboard() {
               className="border border-[rgba(255,255,255,0.15)] px-4 py-2 rounded-full text-xs uppercase tracking-widest hover:border-[#B76E79] hover:text-[#B76E79] transition-colors">
               Refresh
             </button>
-            <button onClick={() => setIsAuthenticated(false)}
+            <button onClick={() => {
+              setSettingsData({ username: localStorage.getItem('hx_admin_user') || '', password: '' });
+              setSettingsStatus({ loading: false, error: '', success: '' });
+              setShowSettingsModal(true);
+            }}
+              className="border border-[rgba(255,255,255,0.15)] px-4 py-2 rounded-full text-xs uppercase tracking-widest hover:border-[#B76E79] hover:text-[#B76E79] transition-colors">
+              Settings
+            </button>
+            <button onClick={() => {
+              localStorage.removeItem('hx_admin_token');
+              localStorage.removeItem('hx_admin_user');
+              setIsAuthenticated(false);
+            }}
               className="border border-[rgba(255,255,255,0.15)] px-4 py-2 rounded-full text-xs uppercase tracking-widest hover:border-[#B76E79] hover:text-[#B76E79] transition-colors">
               Logout
             </button>
@@ -682,6 +728,64 @@ export default function AdminDashboard() {
                 <button type="submit"
                   className="w-full bg-[#B76E79] text-[#0d0d0d] font-medium py-3 rounded-xl mt-2 uppercase tracking-widest text-sm hover:bg-[#F5EFE7] transition-colors">
                   Add to Queue
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* ── SETTINGS MODAL ── */}
+        {showSettingsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              className="bg-[#111] border border-[rgba(255,255,255,0.1)] rounded-2xl w-full max-w-sm p-6 relative">
+              <button onClick={() => setShowSettingsModal(false)}
+                className="absolute top-4 right-4 text-xs opacity-50 hover:opacity-100 hover:text-[#B76E79] transition-colors">
+                ✕ CLOSE
+              </button>
+              <h3 className="text-xl font-serif mb-6 mt-2">Admin Settings</h3>
+              
+              <form onSubmit={handleUpdateSettings}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest opacity-60 mb-2">Username</label>
+                    <input
+                      type="text"
+                      required
+                      value={settingsData.username}
+                      onChange={e => setSettingsData(p => ({ ...p, username: e.target.value }))}
+                      className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-3 text-[#F5EFE7] focus:outline-none focus:border-[#B76E79] transition-colors text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest opacity-60 mb-2">New Password (Optional)</label>
+                    <input
+                      type="password"
+                      value={settingsData.password}
+                      onChange={e => setSettingsData(p => ({ ...p, password: e.target.value }))}
+                      className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-3 text-[#F5EFE7] focus:outline-none focus:border-[#B76E79] transition-colors text-sm"
+                      placeholder="Leave blank to keep unchanged"
+                    />
+                  </div>
+                </div>
+
+                {settingsStatus.error && (
+                  <p className="mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded text-center">
+                    {settingsStatus.error}
+                  </p>
+                )}
+                {settingsStatus.success && (
+                  <p className="mt-4 p-3 bg-green-500/10 border border-green-500/30 text-green-400 text-xs rounded text-center">
+                    {settingsStatus.success}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={settingsStatus.loading}
+                  className="w-full bg-[#B76E79] text-[#0d0d0d] font-medium py-3 rounded-xl mt-6 uppercase tracking-widest text-sm hover:bg-[#F5EFE7] disabled:opacity-50 transition-colors"
+                >
+                  {settingsStatus.loading ? 'Saving...' : 'Save Changes'}
                 </button>
               </form>
             </motion.div>
