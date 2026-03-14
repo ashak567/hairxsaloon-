@@ -251,9 +251,9 @@ export default function AdminDashboard() {
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.15)] px-4 py-2 rounded-full text-xs uppercase tracking-widest text-[#F5EFE7] focus:outline-none focus:border-[#B76E79]"
             >
-              <option value="All Branches">All Branches</option>
-              <option value="Parvatinagar Branch">Parvatinagar Branch</option>
-              <option value="Ashok Nagar Branch">Ashok Nagar Branch</option>
+              <option value="All Branches" className="bg-[#1a1a1a]">All Branches</option>
+              <option value="Parvatinagar Branch" className="bg-[#1a1a1a]">Parvatinagar Branch</option>
+              <option value="Ashok Nagar Branch" className="bg-[#1a1a1a]">Ashok Nagar Branch</option>
             </select>
             <button onClick={() => setShowWalkinModal(true)}
               className="bg-[#B76E79] text-[#0d0d0d] px-6 py-2 rounded-full font-medium tracking-wider hover:bg-[#F5EFE7] transition-colors text-sm">
@@ -448,9 +448,9 @@ export default function AdminDashboard() {
                         <div key={day} className="flex items-center gap-3 text-xs">
                           <span className="opacity-50 w-8">{day}</span>
                           <select className="flex-1 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded px-2 py-1 text-xs text-[#F5EFE7]">
-                            <option>9am – 6pm</option>
-                            <option>10am – 7pm</option>
-                            <option>Off</option>
+                            <option className="bg-[#1a1a1a]">9am – 6pm</option>
+                            <option className="bg-[#1a1a1a]">10am – 7pm</option>
+                            <option className="bg-[#1a1a1a]">Off</option>
                           </select>
                         </div>
                       ))}
@@ -594,10 +594,10 @@ export default function AdminDashboard() {
                 <div>
                   <label className="block text-xs uppercase tracking-widest opacity-60 mb-2">Update Status</label>
                   <select value={newStatus} onChange={e => setNewStatus(e.target.value)} className={inputCls}>
-                    <option>Confirmed</option>
-                    <option>Pending</option>
-                    <option>Completed</option>
-                    <option>Cancelled</option>
+                    <option className="bg-[#1a1a1a]">Confirmed</option>
+                    <option className="bg-[#1a1a1a]">Pending</option>
+                    <option className="bg-[#1a1a1a]">Completed</option>
+                    <option className="bg-[#1a1a1a]">Cancelled</option>
                   </select>
                 </div>
                 <div className="flex gap-3">
@@ -624,7 +624,7 @@ export default function AdminDashboard() {
               className="glass-card w-full max-w-sm p-8 rounded-2xl">
               <h2 className="text-xl font-serif mb-6">Assign Stylist</h2>
               <select value={assignStylist} onChange={e => setAssignStylist(e.target.value)} className={`${inputCls} mb-4`}>
-                {STYLISTS.map(s => <option key={s}>{s}</option>)}
+                {STYLISTS.map(s => <option key={s} className="bg-[#1a1a1a]">{s}</option>)}
               </select>
               <div className="flex gap-3">
                 <button onClick={() => setAssignTarget(null)}
