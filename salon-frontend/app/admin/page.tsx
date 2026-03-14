@@ -271,7 +271,7 @@ export default function AdminDashboard() {
             <p className="text-[#B76E79] uppercase tracking-widest text-xs mb-1">Hair X Studio</p>
             <h1 className="text-3xl font-serif">Staff Portal</h1>
           </div>
-          <div className="flex gap-3 items-center">
+          <div className="flex flex-wrap gap-3 items-center mt-4 sm:mt-0">
             <select 
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
               <option value="Ashok Nagar Branch" className="bg-[#1a1a1a]">Ashok Nagar Branch</option>
             </select>
             <button onClick={() => setShowWalkinModal(true)}
-              className="bg-[#B76E79] text-[#0d0d0d] px-6 py-2 rounded-full font-medium tracking-wider hover:bg-[#F5EFE7] transition-colors text-sm">
+              className="bg-[#B76E79] text-[#0d0d0d] px-6 py-2 rounded-full font-medium tracking-wider hover:bg-[#F5EFE7] transition-colors text-sm whitespace-nowrap">
               + Walk-In
             </button>
             <button onClick={() => { fetchAll(); }}
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
                 <p className="text-sm opacity-40 mb-8 pl-1">No appointments today.</p>
               ) : (
                 <div className="overflow-x-auto mb-8">
-                  <table className="w-full text-left text-sm">
+                  <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead>
                       <tr className="border-b border-[rgba(255,255,255,0.08)] text-xs uppercase tracking-wider opacity-50">
                         <th className="pb-3">Time</th><th className="pb-3">Customer</th>
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
                 <>
                   <h3 className="text-xs uppercase tracking-widest opacity-50 mb-3">Upcoming</h3>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                    <table className="w-full text-left text-sm whitespace-nowrap">
                       <thead>
                         <tr className="border-b border-[rgba(255,255,255,0.08)] text-xs uppercase tracking-wider opacity-50">
                           <th className="pb-3">Date</th><th className="pb-3">Time</th><th className="pb-3">Customer</th>
@@ -497,7 +497,7 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
+                  <table className="w-full text-left text-sm whitespace-nowrap">
                     <thead>
                       <tr className="border-b border-[rgba(255,255,255,0.08)] text-xs uppercase tracking-wider opacity-50">
                         <th className="pb-3">Invoice #</th><th className="pb-3">Customer</th>
@@ -626,7 +626,7 @@ export default function AdminDashboard() {
                     <option className="bg-[#1a1a1a]">Cancelled</option>
                   </select>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button onClick={() => setManageAppt(null)}
                     className="flex-1 py-3 border border-[rgba(255,255,255,0.15)] rounded-xl text-sm hover:border-[#B76E79] transition-colors">
                     Cancel
@@ -652,7 +652,7 @@ export default function AdminDashboard() {
               <select value={assignStylist} onChange={e => setAssignStylist(e.target.value)} className={`${inputCls} mb-4`}>
                 {STYLISTS.map(s => <option key={s} className="bg-[#1a1a1a]">{s}</option>)}
               </select>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button onClick={() => setAssignTarget(null)}
                   className="flex-1 py-3 border border-[rgba(255,255,255,0.15)] rounded-xl text-sm">Cancel</button>
                 <button onClick={() => assignStylistToAppt(assignTarget, assignStylist)}
